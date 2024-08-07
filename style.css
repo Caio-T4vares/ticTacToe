@@ -12,6 +12,7 @@ body {
 }
 body > main {
   flex: 1;
+  text-align: center;
 }
 h1 {
   font-size: 3.3rem;
@@ -26,6 +27,9 @@ h1 {
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
 }
+button {
+  background-color: inherit;
+}
 .slot {
   border: 1px solid black;
   display: flex;
@@ -35,4 +39,17 @@ h1 {
 }
 .onmouse {
   color: rgba(0, 0, 0, 0.2);
+}
+h2 {
+  text-align: center;
+  margin-top: 8px;
+}
+.restart-btn {
+  border-radius: 4px;
+  width: 140px;
+  border: 1px solid black;
+  padding: 8px 12px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  margin-top: 8px;
 }

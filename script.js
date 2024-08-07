@@ -8,7 +8,24 @@ const game = (function () {
   const player2 = { name: "Player 2", boardId: 2 }; // 2 === "0"
   let players = [player1, player2];
   let currentPlayer = 0;
-
+  const displayTurn = (roundResult) => {
+    const turnElement = document.querySelector(".current-turn");
+    turnElement.textContent =
+      roundResult === "Not win" ? `${players[currentPlayer].name} turn!` : "";
+  };
+  const displayResult = (roundResult) => {
+    if (roundResult === "Win") {
+      const resultEl = document.querySelector(".result");
+      resultEl.textContent = `${players[currentPlayer].name} won!`;
+      //
+      disableBoard();
+    } else if (roundResult === "Tie") {
+      const resultEl = document.querySelector(".result");
+      resultEl.textContent = `That's a tie!`;
+      disableBoard();
+    }
+  };
+  displayTurn("Not win");
   const playRound = (row, column) => {
     let roundResult = "";
     if (board[row][column] === 0) {
@@ -21,6 +38,7 @@ const game = (function () {
       } else if (roundResult === "Tie") {
         console.log("That's a tie");
       }
+      displayTurn(roundResult);
       currentPlayer = (currentPlayer + 1) % 2; // alternar entre os players
     }
     return roundResult;
@@ -42,8 +60,14 @@ const game = (function () {
     console.log(boardStr);
   };
   const verifyWin = (row, column, boardId) => {
-    const emptySlots = board.filter((row) => row.filter((slot) => slot === 0));
-    if (emptySlots.length === 0) return "Tie"; // if the board don't have empty slots
+    let cont = 0;
+    const emptySlots = board.map((row) =>
+      row.map((slot) => {
+        if (slot === 0) cont++;
+      })
+    );
+    console.log(cont);
+    if (cont === 0) return "Tie"; // if the board don't have empty slots
     let sequenceRow = 0;
     let sequenceColumn = 0;
     let firstDiagonal = 0;
@@ -65,6 +89,12 @@ const game = (function () {
     return "Not win";
   };
   const slots = document.querySelectorAll(".slot");
+
+  const disableBoard = () => {
+    slots.forEach((slot) => {
+      slot.setAttribute("disabled", true);
+    });
+  };
   slots.forEach((slot) => {
     let clicked = false;
     slot.addEventListener("click", (e) => {
@@ -75,13 +105,7 @@ const game = (function () {
       e.target.textContent = players[currentPlayer].boardId === 1 ? "X" : "O";
       let roundResult = playRound(row, column);
       clicked = roundResult ? true : false;
-      if (roundResult === "Win") {
-        const resultEl = document.querySelector(".result");
-        resultEl.textContent = `${players[currentPlayer].name} won!`;
-      } else if (roundResult === "Tie") {
-        const resultEl = document.querySelector(".result");
-        resultEl.textContent = `That's a tie!`;
-      }
+      displayResult(roundResult);
     });
     slot.addEventListener("mouseover", (e) => {
       if (e.target.textContent == "") {
@@ -96,5 +120,21 @@ const game = (function () {
       }
     });
   });
+  const resetBoard = () => {
+    slots.forEach((slot) => {
+      currentPlayer = 0;
+      slot.textContent = "";
+      slot.removeAttribute("disabled");
+    });
+    board.forEach((row) => {
+      row[0] = 0;
+      row[1] = 0;
+      row[2] = 0;
+    });
+    const resultEl = document.querySelector(".result");
+    resultEl.textContent = "";
+  };
+  const restartBtn = document.querySelector(".restart-btn");
+  restartBtn.addEventListener("click", resetBoard);
   return { playRound, getBoard, printBoard };
 })();
