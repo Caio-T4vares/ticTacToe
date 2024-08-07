@@ -14,9 +14,16 @@ const game = (function () {
     if (board[row][column] === 0) {
       board[row][column] = players[currentPlayer].boardId;
       validMove = true;
-      if (verifyWin(row, column, players[currentPlayer].boardId)) {
+      const roundResult = verifyWin(
+        row,
+        column,
+        players[currentPlayer].boardId
+      );
+      if (roundResult === "Win") {
         console.log(`${players[currentPlayer].name} won!`);
         // se ganhar, o jogo acaba.
+      } else if (roundResult === "Tie") {
+        console.log("That's a tie");
       }
     }
     if (validMove) currentPlayer = (currentPlayer + 1) % 2; // alternar entre os players
@@ -38,6 +45,8 @@ const game = (function () {
     console.log(boardStr);
   };
   const verifyWin = (row, column, boardId) => {
+    const emptySlots = board.filter((row) => row.filter((slot) => slot === 0));
+    if (emptySlots.length === 0) return "Tie"; // if the board don't have empty slots
     let sequenceRow = 0;
     let sequenceColumn = 0;
     let firstDiagonal = 0;
@@ -54,9 +63,9 @@ const game = (function () {
         firstDiagonal === 3 ||
         secondDiagonal === 3
       )
-        return true;
+        return "Win";
     }
-    return false;
+    return "Not win";
   };
 
   return { playRound, getBoard, printBoard };
