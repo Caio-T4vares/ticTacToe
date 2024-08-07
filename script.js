@@ -27,6 +27,7 @@ const game = (function () {
       }
     }
     if (validMove) currentPlayer = (currentPlayer + 1) % 2; // alternar entre os players
+    return validMove;
   };
   const getBoard = () => board;
   const printBoard = () => {
@@ -67,6 +68,30 @@ const game = (function () {
     }
     return "Not win";
   };
-
+  const slots = document.querySelectorAll(".slot");
+  slots.forEach((slot) => {
+    let clicked = false;
+    slot.addEventListener("click", (e) => {
+      clicked = false;
+      const row = e.target.classList.item(1).slice(0, 1);
+      const column = e.target.classList.item(1).slice(2);
+      e.target.classList.remove("onmouse");
+      e.target.textContent = players[currentPlayer].boardId === 1 ? "X" : "O";
+      let validMove = playRound(row, column);
+      clicked = validMove ? true : false;
+    });
+    slot.addEventListener("mouseover", (e) => {
+      if (e.target.textContent == "") {
+        e.target.textContent = players[currentPlayer].boardId === 1 ? "X" : "O";
+        e.target.classList.add("onmouse");
+      }
+    });
+    slot.addEventListener("mouseout", (e) => {
+      if (!clicked) {
+        e.target.textContent = "";
+        e.target.classList.remove("onmouse");
+      }
+    });
+  });
   return { playRound, getBoard, printBoard };
 })();
