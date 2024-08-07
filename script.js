@@ -62,13 +62,12 @@ const game = (function () {
   };
   const verifyWin = (row, column, boardId) => {
     let cont = 0;
-    const emptySlots = board.map((row) =>
+    board.map((row) =>
       row.map((slot) => {
         if (slot === 0) cont++;
       })
     );
 
-    if (cont === 0) return "Tie"; // if the board don't have empty slots
     let sequenceRow = 0;
     let sequenceColumn = 0;
     let firstDiagonal = 0;
@@ -86,26 +85,34 @@ const game = (function () {
         secondDiagonal === 3
       )
         return "Win";
+      if (cont === 0) return "Tie"; // if the board don't have empty slots
     }
     return "Not win";
   };
   const slots = document.querySelectorAll(".slot");
-
+  const clickedArr = [
+    [false, false, false],
+    [false, false, false],
+    [false, false, false],
+  ];
   const disableBoard = () => {
     slots.forEach((slot) => {
       slot.setAttribute("disabled", true);
     });
   };
   slots.forEach((slot) => {
-    let clicked = false;
     slot.addEventListener("click", (e) => {
-      clicked = false;
       const row = e.target.classList.item(1).slice(0, 1);
       const column = e.target.classList.item(1).slice(2);
-      e.target.classList.remove("onmouse");
-      e.target.textContent = players[currentPlayer].boardId === 1 ? "X" : "O";
       let roundResult = playRound(row, column);
-      clicked = roundResult ? true : false;
+      if (roundResult) {
+        e.target.classList.remove("onmouse");
+        let real = (currentPlayer + 1) % 2;
+        e.target.textContent = players[real].boardId === 1 ? "X" : "O";
+        clickedArr[row][column] = true;
+      } else {
+        clickedArr[row][column] = false;
+      }
     });
     slot.addEventListener("mouseover", (e) => {
       if (e.target.textContent == "") {
@@ -114,7 +121,9 @@ const game = (function () {
       }
     });
     slot.addEventListener("mouseout", (e) => {
-      if (!clicked) {
+      const row = e.target.classList.item(1).slice(0, 1);
+      const column = e.target.classList.item(1).slice(2);
+      if (!clickedArr[row][column]) {
         e.target.textContent = "";
         e.target.classList.remove("onmouse");
       }
@@ -131,10 +140,15 @@ const game = (function () {
       row[1] = 0;
       row[2] = 0;
     });
+    clickedArr.forEach((val) => {
+      val[0] = false;
+      val[1] = false;
+      val[2] = false;
+    });
     const resultEl = document.querySelector(".result");
     resultEl.textContent = "";
   };
   const restartBtn = document.querySelector(".restart-btn");
   restartBtn.addEventListener("click", resetBoard);
-  return { playRound, getBoard, printBoard };
+  return { playRound, getBoard, printBoard, clickedArr };
 })();
