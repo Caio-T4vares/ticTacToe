@@ -39,6 +39,7 @@ const game = (function () {
         console.log("That's a tie");
       }
       displayTurn(roundResult);
+      displayResult(roundResult);
       currentPlayer = (currentPlayer + 1) % 2; // alternar entre os players
     }
     return roundResult;
@@ -66,7 +67,7 @@ const game = (function () {
         if (slot === 0) cont++;
       })
     );
-    console.log(cont);
+
     if (cont === 0) return "Tie"; // if the board don't have empty slots
     let sequenceRow = 0;
     let sequenceColumn = 0;
@@ -105,7 +106,6 @@ const game = (function () {
       e.target.textContent = players[currentPlayer].boardId === 1 ? "X" : "O";
       let roundResult = playRound(row, column);
       clicked = roundResult ? true : false;
-      displayResult(roundResult);
     });
     slot.addEventListener("mouseover", (e) => {
       if (e.target.textContent == "") {
