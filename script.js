@@ -10,24 +10,20 @@ const game = (function () {
   let currentPlayer = 0;
 
   const playRound = (row, column) => {
-    let validMove = false;
+    let roundResult = "";
     if (board[row][column] === 0) {
       board[row][column] = players[currentPlayer].boardId;
       validMove = true;
-      const roundResult = verifyWin(
-        row,
-        column,
-        players[currentPlayer].boardId
-      );
+      roundResult = verifyWin(row, column, players[currentPlayer].boardId);
       if (roundResult === "Win") {
         console.log(`${players[currentPlayer].name} won!`);
         // se ganhar, o jogo acaba.
       } else if (roundResult === "Tie") {
         console.log("That's a tie");
       }
+      currentPlayer = (currentPlayer + 1) % 2; // alternar entre os players
     }
-    if (validMove) currentPlayer = (currentPlayer + 1) % 2; // alternar entre os players
-    return validMove;
+    return roundResult;
   };
   const getBoard = () => board;
   const printBoard = () => {
@@ -77,8 +73,15 @@ const game = (function () {
       const column = e.target.classList.item(1).slice(2);
       e.target.classList.remove("onmouse");
       e.target.textContent = players[currentPlayer].boardId === 1 ? "X" : "O";
-      let validMove = playRound(row, column);
-      clicked = validMove ? true : false;
+      let roundResult = playRound(row, column);
+      clicked = roundResult ? true : false;
+      if (roundResult === "Win") {
+        const resultEl = document.querySelector(".result");
+        resultEl.textContent = `${players[currentPlayer].name} won!`;
+      } else if (roundResult === "Tie") {
+        const resultEl = document.querySelector(".result");
+        resultEl.textContent = `That's a tie!`;
+      }
     });
     slot.addEventListener("mouseover", (e) => {
       if (e.target.textContent == "") {
